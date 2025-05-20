@@ -250,6 +250,40 @@ public class StudentResource extends AbsResource<StudentDto, Student, StudentSvc
 
 This framework provides a set of core components to accelerate REST API development. These components include base classes and interfaces for controllers, DTOs, entities, mappers, repositories, and services.
 
+### Configuration
+
+The `com.abavilla.fpi.fw.config` package contains classes for framework configuration:
+
+*   **`BaseReflectionConfig`**: Used for programmatic reflection registration. This is particularly important when preparing an application for GraalVM native image compilation to ensure all necessary classes, especially those accessed via reflection, are included. If your project uses such classes, you might need to register them here.
+*   **`ObjectMapperConfig`**: Configures the Jackson `ObjectMapper` used for JSON serialization and deserialization throughout the framework. It allows for registering custom codecs (e.g., for enums via `AbsEnumCodec` or `IEnumCodecProvider`) and setting default serialization behaviors (e.g., date formats, ignoring null fields).
+
+### Codecs
+
+The `com.abavilla.fpi.fw.codec` package provides support for custom data type serialization and deserialization, particularly for enums:
+
+*   **`AbsEnumCodec<T extends Enum<T> & IBaseEnum>`**: An abstract class to help serialize and deserialize enums that implement the `IBaseEnum` interface. This allows enums to be represented by a specific, human-readable value (e.g., a string like `"active"` or an integer code) in JSON, rather than relying on the default Java enum `name()` or `ordinal()`.
+*   **`IEnumCodecProvider`**: An interface for classes that provide custom enum codecs. `ObjectMapperConfig` uses implementations of this interface to discover and register all custom enum codecs automatically.
+*   **`SampleEnumCodec`**: An example implementation of an enum codec, demonstrating how to use `AbsEnumCodec`.
+
+### Engine
+
+The `com.abavilla.fpi.fw.engine` package provides base classes for business logic components that are not directly tied to a specific entity or repository:
+
+*   **`AbsEngine`**: An abstract base class for engine components.
+*   **`IEngine`**: A marker interface for engine components.
+    These can be used to encapsulate complex business rules or processes that might involve multiple services or external interactions. For example, an application might have a `ReportingEngine` for generating complex reports or a `WorkflowEngine` for managing multi-step business processes.
+
+### Utilities
+
+The `com.abavilla.fpi.fw.util` package contains various utility classes:
+
+*   **`DateUtil`**: Provides helper methods for date and time manipulation (e.g., formatting, parsing, conversions).
+*   **`FWConst`**: Contains framework-level constants, such as default values or common keys.
+*   **`HttpUtil`**: Provides helper methods for HTTP-related operations (e.g., building URLs, handling headers).
+*   **`MapperUtil`**: Provides utility methods for mappers, potentially offering helper functions for common data transformations or conversions not directly handled by MapStruct.
+*   **`SigUtil`**: Utility class for cryptographic signature operations (e.g., generating or verifying signatures).
+*   **`UniUtil`**: Utility class for working with Mutiny's `Uni` reactive type, providing common operations or conversions for asynchronous programming.
+
 ### Controllers
 
 The `com.abavilla.fpi.fw.controller` package contains base classes and interfaces for creating REST controllers:
@@ -310,7 +344,7 @@ The `com.abavilla.fpi.fw.service` package provides base classes and interfaces f
 
 *   **`AbsSvc<D extends IDto, E extends AbsItem>`**: An abstract class for services that handle business logic. It requires a mapper to convert between DTOs and entities.
 *   **`AbsRepoSvc<D extends IDto, E extends AbsItem, R extends IMongoRepo<E>>`**: An abstract class that extends `AbsSvc` and includes a repository for database operations.
-*   **`IProviderSvc`**: An interface for services that provide data from external sources.
+*   **`IProviderSvc`**: An interface for services that provide data from external sources or implement specific business logic not directly tied to CRUD operations on a single entity. This can be used for integrating with third-party APIs or for complex data aggregation tasks.
 *   **`ISvc`**: A marker interface for services.
 
 **Example:** Refer to the `StudentSvc` example in the Sample Usage section.
