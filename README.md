@@ -1,3 +1,5 @@
+For detailed documentation, please see [USAGE.md](USAGE.md).
+
 <img src="banner.png" alt="FPI Framework" width="500"/>
 
 [![Maven Central version](https://img.shields.io/maven-central/v/com.abavilla/fpi-framework?logo=apache-maven)](https://search.maven.org/artifact/com.abavilla/fpi-framework-core)
